@@ -22,7 +22,10 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
 
     matcher = Matcher(nlp.vocab)
     matcher.add("adressPatterns", [
-        [{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y", "OP":"?"},{"POS": {"IN":["PROPN", "NOUN"]}, "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"}],
+        [{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": {"IN": ["ADP", "PROPN"]}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y", "OP": "?"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": {"IN": ["PROPN", "ADP"]}, "OP": "*"}]
+        #[{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": {"IN": ["ADP", "PROPN"]}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y", "OP":"?"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"}],
+        #[{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y", "OP":"?"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"}],
+        #[{"TEXT": {"IN":["calle", "avenida", "ruta"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y", "OP":"?"},{"POS": {"IN":["PROPN", "NOUN"]}, "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"}],
         #[{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"TEXT":"y", "OP":"?"},{"LIKE_NUM": True, "OP":"?"}]
 
         ])#defino los patrones para encontrar la direccion
