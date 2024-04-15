@@ -16,14 +16,15 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     description = row["DESCRIPCION"]#pedimos una columna especifica segun el nombre de la columna, indicada en la 1er linea del csv
     doc = nlp(description)# el doc tiene cada palabra/token
 
-    #print(description) #para ver el texto normal
+    #print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
     print("Descripcion numero ", index+1)
-    #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
+    for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
 
     matcher = Matcher(nlp.vocab)
     matcher.add("adressPatterns", [
-        [{"LOWER": "avenida"},{"LIKE_NUM": True}],
-        [{"LOWER": "ruta"},{"LIKE_NUM": True}]
+        [{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y", "OP":"?"},{"POS": {"IN":["PROPN", "NOUN"]}, "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"}],
+        #[{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"TEXT":"y", "OP":"?"},{"LIKE_NUM": True, "OP":"?"}]
+
         ])#defino los patrones para encontrar la direccion
 
     print("matches:")
