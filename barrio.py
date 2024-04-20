@@ -1,0 +1,71 @@
+#importamos todo
+import spacy#para el nlp()
+import pandas as pd#para manipular el csv mas facil
+from spacy.matcher import Matcher #para hacer los patrones
+from spacy.tokens import Doc, Span
+
+nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con muchos datos
+
+gt = pd.read_csv("csvFile.csv")#abrimos el csv -> lo hacemos una DataFrame
+gt = gt.fillna("")#los datos nulos=incompletos no les asignamos texto
+
+rangeRows = gt.iloc[0:17]# no incluye el numero 5
+
+for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamente el csv
+
+    description = row["DESCRIPCION"]#pedimos una columna especifica segun el nombre de la columna, indicada en la 1er linea del csv
+    doc = nlp(description)# el doc tiene cada palabra/token
+
+    print("Descripcion numero ", index+1)
+    print("")
+    print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
+    print("")
+    #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
+
+    matcher1 = Matcher(nlp.vocab)
+    matcher1.add("nombreBarrio1", [
+        #[{"LOWER": {"IN":["barrio", "lote", "zona"]}}, {"POS": {"IN":["PROPN", "NOUN"]}}],
+        [{"LOWER": {"IN":["barrio", "lote", "zona", "finca"]}, "LEMMA": {"REGEX": "(\w+(s|es)?)"}}, {"POS": {"IN":["PROPN"]}}],
+       # [{"POS": {"IN":["NOUN"]}}, {"POS": {"IN":["PROPN"]}}]#da malas predicciones, pero predice 'fincas'
+    ])
+
+    matcher2 = Matcher(nlp.vocab)
+    matcher2.add("nombreBarrio2", [
+        #[{"POS": {"IN":["NOUN"]}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN": ["NOUN", "ADP", "PROPN", "DET"]}, "OP":"+"},{"POS": {"IN":["PROPN"]}}],
+        #[{"POS": {"IN":["NOUN"]}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN":["PROPN"]}}],
+        #[{"POS": {"IN":["NOUN"]}}, {"POS": {"IN":["PROPN", "NOUN"]}}]
+        [{"LOWER": {"IN":["barrio", "lote", "zona", "fincas"]}, "LEMMA": {"REGEX": "(\w+(s|es)?)"}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN": ["NOUN", "ADP", "PROPN", "DET"]}, "OP":"+"},{"POS": {"IN":["PROPN"]}}],
+        [{"LOWER": {"IN":["barrio", "lote", "zona", "fincas"]}, "LEMMA": {"REGEX": "(\w+(s|es)?)"}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN":["PROPN"]}}],
+        ])#defino los patrones para encontrar cierto campo
+
+    matches1 = matcher1(doc)
+    matches2 = matcher2(doc)
+    print("")
+    maxSize = 0
+    best_span = doc[0:0]
+    print("matches:")
+   # mejor1=True
+    
+    for match_id, start, end in matches1: #para lo que encontramos vamos a mostrar solo eso
+        print(doc[start:end].text)
+        actSize = end - start
+        if (actSize > maxSize):
+            maxSize = actSize
+            best_span = doc[start:end] #para que no se quede con 'lote' o similar
+   # if maxSize == 0:
+   #     mejor1=False
+
+    for match_id, start, end in matches2: #para lo que encontramos vamos a mostrar solo eso
+        print(doc[start:end].text)
+        actSize = end - start
+        if (actSize > maxSize): #and (not mejor1):
+            maxSize = actSize
+            best_span = doc[start:end]
+
+    print("mejor matcheo:")
+    print(best_span.text)#mostramos el texto que coincide con el patron
+
+    print("")
+    print("------------------------------------------------------------")
+    print("")
+
