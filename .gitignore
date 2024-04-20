@@ -6,3 +6,5 @@
 *.cfg
 *.pdf
 *.env
+.env*.local
+.env
