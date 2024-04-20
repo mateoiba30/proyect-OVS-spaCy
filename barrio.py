@@ -21,11 +21,12 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
     print("")
     #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
+    keywords = ["barrio", "lote", "zona", "finca", "fincas", "sector", "sectores", "urbanizacion", "urbanizaciones"]
 
     matcher1 = Matcher(nlp.vocab)
     matcher1.add("nombreBarrio1", [
         #[{"LOWER": {"IN":["barrio", "lote", "zona"]}}, {"POS": {"IN":["PROPN", "NOUN"]}}],
-        [{"LOWER": {"IN":["barrio", "lote", "zona", "finca"]}, "LEMMA": {"REGEX": "(\w+(s|es)?)"}}, {"POS": {"IN":["PROPN"]}}],
+        [{"LOWER": {"IN":keywords}}, {"POS": {"IN":["PROPN"]}}],
        # [{"POS": {"IN":["NOUN"]}}, {"POS": {"IN":["PROPN"]}}]#da malas predicciones, pero predice 'fincas'
     ])
 
@@ -34,8 +35,8 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
         #[{"POS": {"IN":["NOUN"]}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN": ["NOUN", "ADP", "PROPN", "DET"]}, "OP":"+"},{"POS": {"IN":["PROPN"]}}],
         #[{"POS": {"IN":["NOUN"]}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN":["PROPN"]}}],
         #[{"POS": {"IN":["NOUN"]}}, {"POS": {"IN":["PROPN", "NOUN"]}}]
-        [{"LOWER": {"IN":["barrio", "lote", "zona", "fincas"]}, "LEMMA": {"REGEX": "(\w+(s|es)?)"}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN": ["NOUN", "ADP", "PROPN", "DET"]}, "OP":"+"},{"POS": {"IN":["PROPN"]}}],
-        [{"LOWER": {"IN":["barrio", "lote", "zona", "fincas"]}, "LEMMA": {"REGEX": "(\w+(s|es)?)"}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN":["PROPN"]}}],
+        [{"LOWER": {"IN":keywords}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN": ["NOUN", "ADP", "PROPN", "DET"]}, "OP":"+"},{"POS": {"IN":["PROPN"]}}],
+        [{"LOWER": {"IN":keywords}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN":["PROPN"]}}],
         ])#defino los patrones para encontrar cierto campo
 
     matches1 = matcher1(doc)
