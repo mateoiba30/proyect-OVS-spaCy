@@ -27,9 +27,9 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     matcher = Matcher(nlp.vocab)
     matcher.add("measuresPatterns", [
             #pongo un solo LIKE_NUM, porque el m^2 y otros me lo matchea como numero
-            [{"LIKE_NUM":True},{"LOWER": {"IN":medidas}}, {"POS":{"IN":["ADP", "ADV", "PROPN", "NOUN"]}, "OP":"*"},{"LOWER":{"IN":["x", "y", "por"]}}, {"LIKE_NUM":True, "OP":"+"}, {"LOWER": {"IN":medidas}, "OP":"?"}],
-            [{"LIKE_NUM":True},{"LOWER": {"IN":medidas}, "OP":"?"}, {"POS":{"IN":["ADP", "ADV","PROPN", "NOUN"]}, "OP":"*"},{"LOWER":{"IN":["x", "y", "por"]}}, {"LIKE_NUM":True, "OP":"+"}, {"LOWER": {"IN":medidas}}],
-            [{"LIKE_NUM":True}, {"LOWER": {"IN":medidas2D}}] #porque aveces dice "a 1200 metros de tal lugar" y eso lo tengo que esquivar
+    #        [{"LIKE_NUM":True},{"LOWER": {"IN":medidas}}, {"POS":{"IN":["ADP", "ADV", "PROPN", "NOUN"]}, "OP":"*"},{"LOWER":{"IN":["x", "y", "por"]}}, {"LIKE_NUM":True, "OP":"+"}, {"LOWER": {"IN":medidas}, "OP":"?"}],
+    #        [{"LIKE_NUM":True},{"LOWER": {"IN":medidas}, "OP":"?"}, {"POS":{"IN":["ADP", "ADV","PROPN", "NOUN"]}, "OP":"*"},{"LOWER":{"IN":["x", "y", "por"]}}, {"LIKE_NUM":True, "OP":"+"}, {"LOWER": {"IN":medidas}}],
+             [{"LIKE_NUM":True}, {"LOWER": {"IN":medidas2D}}] #porque aveces dice "a 1200 metros de tal lugar" y eso lo tengo que esquivar
             #[{"LIKE_NUM":True, "OP":"+"},{"POS": {"IN":["NOUN", "NUM"]}}, {"LOWER":{"IN":["x", "y"]}}, {"LIKE_NUM":True, "OP":"+"}, {"POS": {"IN":["NOUN", "NUM"]}}],
             #[{"LIKE_NUM":True, "OP":"+"}, {"POS": {"IN":["NOUN", "NUM"]}}]
         ])#defino los patrones para encontrar cierto campo

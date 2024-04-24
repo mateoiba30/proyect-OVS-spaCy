@@ -24,7 +24,7 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
 
     matcher = Matcher(nlp.vocab)
     matcher.add("fotPatterns", [
-            [{"LOWER": {"IN":["fot", "factor de ocupación del suelo"]}},{"POS": {"IN":["ADJ", "PROPN"]}, "OP":"?"},{"LIKE_NUM": True}]
+            [{"LOWER": {"IN":["fot", "factor de ocupacion del suelo"]}},{"POS": {"IN":["ADJ", "PROPN", "ADP"]}, "OP":"*"},{"LIKE_NUM": True}]
         ])#defino los patrones para encontrar cierto campo
 
     print("")
