@@ -21,45 +21,25 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
     print("")
     #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
-    keywords = ["barrio", "lote", "zona", "finca", "fincas", "sector", "sectores", "urbanizacion", "urbanizaciones"]
+    keywords = ["barrio", "lote", "zona", "finca", "sector", "urbanizacion"]
 
-    matcher1 = Matcher(nlp.vocab)
-    matcher1.add("nombreBarrio1", [
-        #[{"LOWER": {"IN":["barrio", "lote", "zona"]}}, {"POS": {"IN":["PROPN", "NOUN"]}}],
-        [{"LOWER": {"IN":keywords}}, {"POS": {"IN":["PROPN"]}}],
-       # [{"POS": {"IN":["NOUN"]}}, {"POS": {"IN":["PROPN"]}}]#da malas predicciones, pero predice 'fincas'
-    ])
+    matcher = Matcher(nlp.vocab)
+    matcher.add("nombreBarrio1", [
+        [{"LEMMA": {"IN":keywords}}, {"POS": {"IN":["PROPN"]}}],
+        [{"LEMMA": {"IN":keywords}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN": ["NOUN", "ADP", "PROPN", "DET"]}, "OP":"+"},{"POS": {"IN":["PROPN"]}}],
+        [{"LEMMA": {"IN":keywords}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN":["PROPN"]}}],
+        ])
 
-    matcher2 = Matcher(nlp.vocab)
-    matcher2.add("nombreBarrio2", [
-        #[{"POS": {"IN":["NOUN"]}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN": ["NOUN", "ADP", "PROPN", "DET"]}, "OP":"+"},{"POS": {"IN":["PROPN"]}}],
-        #[{"POS": {"IN":["NOUN"]}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN":["PROPN"]}}],
-        #[{"POS": {"IN":["NOUN"]}}, {"POS": {"IN":["PROPN", "NOUN"]}}]
-        [{"LOWER": {"IN":keywords}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN": ["NOUN", "ADP", "PROPN", "DET"]}, "OP":"+"},{"POS": {"IN":["PROPN"]}}],
-        [{"LOWER": {"IN":keywords}},{"LIKE_NUM":True, "OP":"?"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN":["PROPN"]}}],
-        ])#defino los patrones para encontrar cierto campo
-
-    matches1 = matcher1(doc)
-    matches2 = matcher2(doc)
+    matches= matcher(doc)
     print("")
     maxSize = 0
     best_span = doc[0:0]
     print("matches:")
-   # mejor1=True
     
-    for match_id, start, end in matches1: #para lo que encontramos vamos a mostrar solo eso
+    for match_id, start, end in matches: #para lo que encontramos vamos a mostrar solo eso
         print(doc[start:end].text)
         actSize = end - start
         if (actSize > maxSize):
-            maxSize = actSize
-            best_span = doc[start:end] #para que no se quede con 'lote' o similar
-   # if maxSize == 0:
-   #     mejor1=False
-
-    for match_id, start, end in matches2: #para lo que encontramos vamos a mostrar solo eso
-        print(doc[start:end].text)
-        actSize = end - start
-        if (actSize > maxSize): #and (not mejor1):
             maxSize = actSize
             best_span = doc[start:end]
 

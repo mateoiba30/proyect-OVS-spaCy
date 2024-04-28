@@ -9,7 +9,7 @@ nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con
 gt = pd.read_csv("csvFile.csv")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")#los datos nulos=incompletos no les asignamos texto
 
-rangeRows = gt.iloc[0:17]# no incluye el numero 5
+rangeRows = gt.iloc[0:16]# no incluye el numero 5
 
 for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamente el csv
 
@@ -22,19 +22,16 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     print("")
     #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
 
+    conectores = ["e", "e/", "entre", "y", "a", "a/"]
+    calleSinonimos = [ "calle", "avenida", "carrera", "diagonal", "transversal", "circular", "cra", "cl", "av", "dg", "tr"]
     matcher = Matcher(nlp.vocab)
     matcher.add("adressPatterns", [
         [{"LIKE_NUM": True}, {"POS": "ADJ"}, {"LIKE_NUM": True},{"TEXT":"y"}, {"LIKE_NUM": True}],
-        [{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": {"IN": ["ADP", "PROPN"]}, "OP":"+"},{"LIKE_NUM":True, "OP":"+"}],
-        [{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": {"IN": ["ADP", "PROPN"]}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"+"}],
-        [{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": {"IN": ["ADP", "PROPN"]}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP": "*"},{"POS": "PROPN", "OP": "+"}],
-
-        #[{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": {"IN": ["ADP", "PROPN"]}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y", "OP":"?"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"}],
-        #[{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y", "OP":"?"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"}],
-        #[{"TEXT": {"IN":["calle", "avenida", "ruta"]}},{"LIKE_NUM": True},{"POS":"ADJ", "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y", "OP":"?"},{"POS": {"IN":["PROPN", "NOUN"]}, "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP":"?"},{"POS": "PROPN", "OP": "*"}],
-        #[{"POS": {"IN":["PROPN", "NOUN"]}},{"LIKE_NUM": True},{"TEXT":"y", "OP":"?"},{"LIKE_NUM": True, "OP":"?"}]
-
-        ])#defino los patrones para encontrar la direccion
+        [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"+"},{"LIKE_NUM":True, "OP":"+"}],
+        [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"POS": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"+"}],
+        [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"POS": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP": "*"},{"POS": "PROPN", "OP": "+"}],
+        ])#{"LEMMA":"bis", "OP":"?"} o preguntar por ADJ? -> mejor por lo 1ro así matchea aunque pongan en maysuculas a BIS
+    
     print("")
     maxSize = 0
     best_span = doc[0:0]

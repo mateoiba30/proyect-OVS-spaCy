@@ -9,7 +9,7 @@ nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con
 gt = pd.read_csv("csvFile.csv")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")#los datos nulos=incompletos no les asignamos texto
 
-rangeRows = gt.iloc[0:16]# no incluye el numero 5
+rangeRows = gt.iloc[10:12]# no incluye el numero 5
 
 for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamente el csv
 
@@ -20,18 +20,14 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     print("")
     print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
     print("")
-    #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
+    for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
 
-    medidas = ["m2", "metro", "m", "mt", "m^2", "m²", "metros", "mts", "mts2", "ms2", "ms"]
-    medidas2D = ["m2", "m^2", "mts2", "ms2", "m²"]
+    conectores = ["x", "y", "por"]
+    medidas = ["metro", "m", "mt", "mts", "ms"] #el LEMMA no funciona con "m" porque cree que es un número en lugar de una palabra
     matcher = Matcher(nlp.vocab)
     matcher.add("measuresPatterns", [
-            #pongo un solo LIKE_NUM, porque el m^2 y otros me lo matchea como numero
-    #        [{"LIKE_NUM":True},{"LOWER": {"IN":medidas}}, {"POS":{"IN":["ADP", "ADV", "PROPN", "NOUN"]}, "OP":"*"},{"LOWER":{"IN":["x", "y", "por"]}}, {"LIKE_NUM":True, "OP":"+"}, {"LOWER": {"IN":medidas}, "OP":"?"}],
-    #        [{"LIKE_NUM":True},{"LOWER": {"IN":medidas}, "OP":"?"}, {"POS":{"IN":["ADP", "ADV","PROPN", "NOUN"]}, "OP":"*"},{"LOWER":{"IN":["x", "y", "por"]}}, {"LIKE_NUM":True, "OP":"+"}, {"LOWER": {"IN":medidas}}],
-             [{"LIKE_NUM":True}, {"LOWER": {"IN":medidas2D}}] #porque aveces dice "a 1200 metros de tal lugar" y eso lo tengo que esquivar
-            #[{"LIKE_NUM":True, "OP":"+"},{"POS": {"IN":["NOUN", "NUM"]}}, {"LOWER":{"IN":["x", "y"]}}, {"LIKE_NUM":True, "OP":"+"}, {"POS": {"IN":["NOUN", "NUM"]}}],
-            #[{"LIKE_NUM":True, "OP":"+"}, {"POS": {"IN":["NOUN", "NUM"]}}]
+            [{"LIKE_NUM":True},{"LEMMA": {"IN":medidas}}, {"POS":{"IN":["ADP", "ADV", "PROPN", "NOUN"]}, "OP":"*"},{"LOWER":{"IN":conectores}}, {"LIKE_NUM":True, "OP":"+"}, {"LOWER": {"IN":medidas}, "OP":"?"}],
+            [{"LIKE_NUM":True},{"LEMMA": {"IN":medidas}, "OP":"?"}, {"POS":{"IN":["ADP", "ADV","PROPN", "NOUN"]}, "OP":"*"},{"LOWER":{"IN":conectores}}, {"LIKE_NUM":True, "OP":"+"}, {"LOWER": {"IN":medidas}}],
         ])#defino los patrones para encontrar cierto campo
 
     print("")

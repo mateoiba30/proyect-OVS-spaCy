@@ -1,7 +1,7 @@
 #importamos todo
 import spacy#para el nlp()
 import pandas as pd#para manipular el csv mas facil
-from spacy.matcher import Matcher #para hacer los patrones
+from spacy.matcher import Matcher, PhraseMatcher #para hacer los patrones
 from spacy.tokens import Doc, Span
 
 nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con muchos datos
@@ -9,7 +9,7 @@ nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con
 gt = pd.read_csv("csvFile.csv")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")#los datos nulos=incompletos no les asignamos texto
 
-rangeRows = gt.iloc[0:17]# no incluye el numero 5
+rangeRows = gt.iloc[0:16]# no incluye el numero 5
 
 for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamente el csv
 
@@ -22,10 +22,12 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     print("")
     #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
 
+    fotSinonimos = ['fot', 'f.o.t']
     matcher = Matcher(nlp.vocab)
     matcher.add("fotPatterns", [
-            [{"LOWER": {"IN":["fot", "factor de ocupacion del suelo"]}},{"POS": {"IN":["ADJ", "PROPN", "ADP"]}, "OP":"*"},{"LIKE_NUM": True}]
-        ])#defino los patrones para encontrar cierto campo
+            [{'LOWER': {'IN':fotSinonimos}},{"POS": {"IN":["ADJ", "PROPN"]}, "OP":"*"},{"LIKE_NUM": True}],
+            [{"LOWER": "factor"},{"LOWER": "de"},{"LOWER": "ocupacion"},{"LOWER": "total"},{'POS': "ADP", 'OP':'?'},{'LIKE_NUM': True}],
+    ])
 
     print("")
     maxSize = 0
