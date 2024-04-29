@@ -9,7 +9,7 @@ nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con
 gt = pd.read_csv("csvFile.csv")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")#los datos nulos=incompletos no les asignamos texto
 
-rangeRows = gt.iloc[0:16]# no incluye el numero 5
+rangeRows = gt.iloc[29:30]# no incluye el numero 5
 
 for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamente el csv
 
@@ -20,18 +20,24 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     print("")
     print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
     print("")
-    #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
+    for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
 
+    nombreLargo = ["PROPN", "DET", "ADP", "NOUN"]
     conectores = ["e", "e/", "entre", "y", "a", "a/"]
-    calleSinonimos = [ "calle", "avenida", "carrera", "diagonal", "transversal", "circular", "cra", "cl", "av", "dg", "tr"]
+    calleSinonimos = ["Av.", "calle", "avenida", "carrera", "diagonal", "cra","av", "dg", "diag",  "av.", "dg.", "diag.", "cra."]
     matcher = Matcher(nlp.vocab)
     matcher.add("adressPatterns", [
+        #direcciones platenses
         [{"LIKE_NUM": True}, {"POS": "ADJ"}, {"LIKE_NUM": True},{"TEXT":"y"}, {"LIKE_NUM": True}],
         [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"+"},{"LIKE_NUM":True, "OP":"+"}],
-        [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"POS": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"+"}],
-        [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"POS": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP": "*"},{"POS": "PROPN", "OP": "+"}],
+        [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"LOWER":"bis", "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"+"}],
+        [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"LOWER":"bis", "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"LOWER":"bis", "OP":"?"},{"POS": "ADP", "OP": "*"},{"POS": "PROPN", "OP": "+"}],
         
-        #replicar los 3 patrones de arriba en esta forma: #[{"LEMMA": {"IN":calleSinonimos}},{"POS": {"IN": ["NOUN", "ADP", "PROPN", "DET"]}, "OP":"+"},{"LEMMA": {"IN": conectores}, "OP":"+"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN":["PROPN"]}}]
+        #direcciones no platenses
+        [{"LEMMA": {"IN":calleSinonimos}},{"POS":{"IN":nombreLargo}, "OP":"+"},{"TEXT": "al", "OP":"?"},{"LIKE_NUM": True, "OP":"+"}],
+        [{"LEMMA": {"IN":calleSinonimos}},{"POS":{"IN":nombreLargo}, "OP":"+"},{"LEMMA": {"IN": conectores}},{"LEMMA": {"IN":calleSinonimos}, "OP":"?"},{"POS":{"IN":nombreLargo}, "OP":"+"},{"TEXT":"y"},{"LEMMA": {"IN":calleSinonimos}, "OP":"?"},{"POS":{"IN":nombreLargo}, "OP":"+"}]
+        #[{"LEMMA": {"IN":calleSinonimos}},{"POS":{"IN":nombreLargo}, "OP":"+"},{"LEMMA": {"IN": conectores}, "OP":"+"},{"POS":{"IN":nombreLargo}, "OP":"+"},{"POS": "PROPN"}],
+        #[{"LEMMA": {"IN":calleSinonimos}},{"POS":{"IN":nombreLargo}, "OP":"+"},{"POS": {"IN": conectores}, "OP":"*"},{"POS":{"IN":nombreLargo}, "OP":"*"},{"TEXT":"y"},{"POS":{"IN":nombreLargo}, "OP":"+"},{"POS": "PROPN"}],
         ])#{"LEMMA":"bis", "OP":"?"} o preguntar por ADJ? -> mejor por lo 1ro así matchea aunque pongan en maysuculas a BIS
     
     print("")
