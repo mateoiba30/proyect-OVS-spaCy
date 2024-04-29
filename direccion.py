@@ -30,6 +30,8 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
         [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"+"},{"LIKE_NUM":True, "OP":"+"}],
         [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"POS": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"+"}],
         [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"POS": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"POS": "ADP", "OP": "*"},{"POS": "PROPN", "OP": "+"}],
+        
+        #replicar los 3 patrones de arriba en esta forma: #[{"LEMMA": {"IN":calleSinonimos}},{"POS": {"IN": ["NOUN", "ADP", "PROPN", "DET"]}, "OP":"+"},{"LEMMA": {"IN": conectores}, "OP":"+"},{"POS": {"IN":["PRON", "VERB", "ADP", "NOUN"]}, "OP":"*"},{"POS": {"IN":["PROPN"]}}]
         ])#{"LEMMA":"bis", "OP":"?"} o preguntar por ADJ? -> mejor por lo 1ro así matchea aunque pongan en maysuculas a BIS
     
     print("")
