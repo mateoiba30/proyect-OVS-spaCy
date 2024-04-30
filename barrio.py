@@ -21,7 +21,7 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
     print("")
     #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
-    keywords = ["barrio", "lote", "zona", "finca", "sector", "urbanizacion", "estacion"]
+    keywords = ["barrio", "lote", "zona", "finca", "sector", "urbanizacion"]
 
     matcher = Matcher(nlp.vocab)
     matcher.add("nombreBarrio1", [
