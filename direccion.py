@@ -24,18 +24,18 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
 
     nombreLargo = ["PROPN", "DET", "ADP", "NOUN"]
     conectores = ["e", "e/", "entre", "y", "a", "a/"]
-    calleSinonimos = ["Av.", "calle", "avenida", "carrera", "diagonal", "cra","av", "dg", "diag",  "av.", "dg.", "diag.", "cra."]
+    calleSinonimos = ["Av", "calle", "avenida", "carrera", "diagonal", "cra","av", "dg", "diag"]
     matcher = Matcher(nlp.vocab)
     matcher.add("adressPatterns", [
         #direcciones platenses
         [{"LIKE_NUM": True}, {"POS": "ADJ"}, {"LIKE_NUM": True},{"TEXT":"y"}, {"LIKE_NUM": True}],
-        [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"+"},{"LIKE_NUM":True, "OP":"+"}],
-        [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"LOWER":"bis", "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"+"}],
-        [{"LEMMA": {"IN":calleSinonimos}},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"LOWER":"bis", "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"LOWER":"bis", "OP":"?"},{"POS": "ADP", "OP": "*"},{"POS": "PROPN", "OP": "+"}],
+        [{"LEMMA": {"IN":calleSinonimos}},{'TEXT': '.', 'OP':'?'},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"+"},{"LIKE_NUM":True, "OP":"+"}],
+        [{"LEMMA": {"IN":calleSinonimos}},{'TEXT': '.', 'OP':'?'},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"LOWER":"bis", "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"+"}],
+        [{"LEMMA": {"IN":calleSinonimos}},{'TEXT': '.', 'OP':'?'},{"LIKE_NUM": True},{"LOWER":"bis", "OP":"?"},{"LEMMA": {"IN": conectores}, "OP":"*"},{"LIKE_NUM":True, "OP":"?"},{"LOWER":"bis", "OP":"?"},{"TEXT":"y"},{"POS": "PROPN", "OP":"?"},{"LIKE_NUM": True, "OP":"?"},{"LOWER":"bis", "OP":"?"},{"POS": "ADP", "OP": "*"},{"POS": "PROPN", "OP": "+"}],
         
         #direcciones no platenses
-        [{"LEMMA": {"IN":calleSinonimos}},{"POS":{"IN":nombreLargo}, "OP":"+"},{"TEXT": "al", "OP":"?"},{"LIKE_NUM": True, "OP":"+"}],
-        [{"LEMMA": {"IN":calleSinonimos}},{"POS":{"IN":nombreLargo}, "OP":"+"},{"LEMMA": {"IN": conectores}},{"LEMMA": {"IN":calleSinonimos}, "OP":"?"},{"POS":{"IN":nombreLargo}, "OP":"+"},{"TEXT":"y"},{"LEMMA": {"IN":calleSinonimos}, "OP":"?"},{"POS":{"IN":nombreLargo}, "OP":"+"}]
+        [{"LEMMA": {"IN":calleSinonimos}},{'TEXT': '.', 'OP':'?'},{"POS":{"IN":nombreLargo}, "OP":"+"},{"TEXT": "al", "OP":"?"},{"LIKE_NUM": True, "OP":"+"}],
+        [{"LEMMA": {"IN":calleSinonimos}},{'TEXT': '.', 'OP':'?'},{"POS":{"IN":nombreLargo}, "OP":"+"},{"LEMMA": {"IN": conectores}},{"LEMMA": {"IN":calleSinonimos}, "OP":"?"},{'TEXT': '.', 'OP':'?'},{"POS":{"IN":nombreLargo}, "OP":"+"},{"TEXT":"y"},{"LEMMA": {"IN":calleSinonimos}, "OP":"?"},{'TEXT': '.', 'OP':'?'},{"POS":{"IN":nombreLargo}, "OP":"+"}]
         #[{"LEMMA": {"IN":calleSinonimos}},{"POS":{"IN":nombreLargo}, "OP":"+"},{"LEMMA": {"IN": conectores}, "OP":"+"},{"POS":{"IN":nombreLargo}, "OP":"+"},{"POS": "PROPN"}],
         #[{"LEMMA": {"IN":calleSinonimos}},{"POS":{"IN":nombreLargo}, "OP":"+"},{"POS": {"IN": conectores}, "OP":"*"},{"POS":{"IN":nombreLargo}, "OP":"*"},{"TEXT":"y"},{"POS":{"IN":nombreLargo}, "OP":"+"},{"POS": "PROPN"}],
         ])#{"LEMMA":"bis", "OP":"?"} o preguntar por ADJ? -> mejor por lo 1ro así matchea aunque pongan en maysuculas a BIS
