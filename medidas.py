@@ -9,7 +9,7 @@ nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con
 gt = pd.read_csv("csvFile.csv")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")#los datos nulos=incompletos no les asignamos texto
 
-rangeRows = gt.iloc[8:9]# 16:23
+rangeRows = gt.iloc[:30]# 16:23
 
 for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamente el csv
 
@@ -20,7 +20,7 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     print("")
     print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
     print("")
-    for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
+    #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
 
     dimension = ["frente", "fondo", "lateral", "ancho", "alto", "profundidad", "largo", "anchura", "longitud", "espesor"]
     conectores = ["x", "y", "por", "de", "con"]

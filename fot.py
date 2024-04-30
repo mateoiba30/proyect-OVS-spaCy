@@ -9,7 +9,7 @@ nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con
 gt = pd.read_csv("csvFile.csv")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")#los datos nulos=incompletos no les asignamos texto
 
-rangeRows = gt.iloc[0:16]# no incluye el numero 5
+rangeRows = gt.iloc[0:30]# no incluye el numero 5
 
 for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamente el csv
 
