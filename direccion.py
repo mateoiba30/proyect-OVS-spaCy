@@ -1,5 +1,5 @@
 #importamos todo
-import spacy#para el nlp()
+import spacy #para el nlp()
 import pandas as pd#para manipular el csv mas facil
 from spacy.matcher import Matcher #para hacer los patrones
 from spacy.tokens import Doc, Span
@@ -9,7 +9,7 @@ nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con
 gt = pd.read_csv("csvFile.csv")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")#los datos nulos=incompletos no les asignamos texto
 
-rangeRows = gt.iloc[:30]# no incluye el numero 5
+rangeRows = gt.iloc[:1]# no incluye el numero 5
 
 for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamente el csv
 
@@ -20,7 +20,7 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     print("")
     print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
     print("")
-    #for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
+    for token in doc: print(token.text, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token
 
     nombreLargo = ["PROPN", "DET", "ADP", "NOUN"]
     conectores = ["e", "e/", "entre", "y", "a", "a/"]
