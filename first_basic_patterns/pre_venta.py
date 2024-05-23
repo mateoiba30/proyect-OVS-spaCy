@@ -38,12 +38,6 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
             #[{"LOWER": "posesión"}, {"LOWER": "a"}, {"LIKE_NUM": True}, {"LOWER": {"IN": tiempo}}],
 
         ])#defino los patrones para encontrar cierto campo
-    
-    prediccion = False
-    matches = matcher(doc)#mostramos lo que encontramos con el patron
-    if len(matches) > 0:
-        prediccion: True
-
     print("------------------------------------------------------------")
     print("")
     print(f"\nDescripcion numero", index+1)
@@ -54,5 +48,17 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     print("")
     print("esperado: " + str(resultado))
     print("")
+    print("matcheos: ")
+    matcheos = 0
+    matches = matcher(doc)#mostramos lo que encontramos con el patron
+    for match_id, start, end in matches: #para lo que encontramos vamos a mostrar solo eso
+        print(doc[start:end].text)
+        matcheos += 1
+    prediccion = False
+    if matcheos > 0:
+        prediccion = True
+    print("")
     print("prediccion: " + str(prediccion))
     print("")
+
+
