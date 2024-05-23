@@ -25,7 +25,7 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     tiempo = ["año", "años", "mes", "meses"]
     #para usar con LOWER
     palabraPreVenta = ["preventa", "pre-venta"]
-    palabrasFuturoExactas = ["concretará", "contará","propuesta", "construcción", "proyecto", "entregará", "entregarán", "entrega", "posesion", "posesión", "obra", "desarrollo"]
+    palabrasFuturoExactas = ["concretará", "contará","propuesta", "construcción", "proyecto", "entregará", "entregarán", "posesion", "posesión", "obra", "desarrollo"]
 
     matcher = Matcher(nlp.vocab)
     matcher.add("preventa", [ 
@@ -43,7 +43,7 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
             #[{"LOWER": "posesión"}, {"LOWER": "a"}, {"LIKE_NUM": True}, {"LOWER": {"IN": tiempo}}],
 
         ])#defino los patrones para encontrar cierto campo
-    mostrar = False
+    mostrar = True
     matcheos = 0
     matches = matcher(doc)#mostramos lo que encontramos con el patron
     for match_id, start, end in matches: #para lo que encontramos vamos a mostrar solo eso
