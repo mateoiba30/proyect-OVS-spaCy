@@ -27,16 +27,16 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     tiempo = ["año", "años", "mes", "meses"]
     #para usar con LOWER
     palabraPreVenta = ["preventa", "pre-venta"]
-    palabrasFuturoExactas = ["concretará", "contará","propuesta", "construcción", "proyecto", "entregará", "entregarán", "entrega", "posesion", "posesión", "obra", "desarrollo"]
+    palabrasFuturoExactas = ["concretará", "contará","propuesta", "construcción", "proyecto", "entregará", "entregarán", "entrega", "posesión", "obra", "desarrollo"]
 
-    matcherPreventa = Matcher(nlp.vocab)
-    matcherPreventa.add("preventa", [ 
+    matcherAsegurado = Matcher(nlp.vocab)
+    matcherAsegurado.add("asegurados", [ #si matcheo algo de acá seguro es una preventa
             [{"LOWER":{"IN": palabraPreVenta}}],
             [{"LOWER": "pre"}, {"LOWER": "venta"}],
         ])#defino los patrones para encontrar cierto campo
     
-    matcherFuturo = Matcher(nlp.vocab)
-    matcherFuturo.add("futuro", [
+    matcherPosible = Matcher(nlp.vocab)
+    matcherPosible.add("posibles", [ #si matcheo algo de acá tal vez es una preventa
             [{"LOWER":{"IN": palabrasFuturoExactas}}],
             [{"LOWER": "primeras"}, {"LIKE_NUM": True}, {"LOWER": "unidades"}],
             #no necesarias porque ya me conformo solo con encontrar la palabra posesión
@@ -46,12 +46,12 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     
     mostrar = False
     matcheos = 0
-    matchesPreventa = matcherPreventa(doc)#mostramos lo que encontramos con el patron
-    for match_id, start, end in matchesPreventa: #para lo que encontramos vamos a mostrar solo eso
+    matcherAsegurado = matcherAsegurado(doc)#mostramos lo que encontramos con el patron
+    for match_id, start, end in matcherAsegurado: #para lo que encontramos vamos a mostrar solo eso
         matcheos += minimosMatcheos+1
 
-    matchesFuturo = matcherFuturo(doc)#mostramos lo que encontramos con el patron
-    for match_id, start, end in matchesFuturo: #para lo que encontramos vamos a mostrar solo eso
+    matcherPosible = matcherPosible(doc)#mostramos lo que encontramos con el patron
+    for match_id, start, end in matcherPosible: #para lo que encontramos vamos a mostrar solo eso
         matcheos += 1
 
     prediccion = False
@@ -83,9 +83,9 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
         print("prediccion: " + str(prediccion))
         print("")
         print("matcheos: ")
-        for match_id, start, end in matchesPreventa:
+        for match_id, start, end in matcherAsegurado:
             print(doc[start:end].text)
-        for match_id, start, end in matchesFuturo:
+        for match_id, start, end in matcherPosible:
             print(doc[start:end].text)
         print("")
 
