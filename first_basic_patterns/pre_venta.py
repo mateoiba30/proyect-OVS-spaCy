@@ -41,9 +41,9 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     matcherPosible.add("posibles", [ #si matcheo algo de acá tal vez es una preventa
             [{"LOWER":{"IN": palabrasFuturoExactas}}],
             [{"LOWER": "primeras"}, {"LIKE_NUM": True}, {"LOWER": "unidades"}],
-            #no necesarias porque ya me conformo solo con encontrar la palabra posesión
-            #[{"LOWER": "posesión"}, {"LOWER": "futura"}],
-            #[{"LOWER": "posesión"}, {"LOWER": "a"}, {"LIKE_NUM": True}, {"LOWER": {"IN": tiempo}}],
+            #distingo si encuentro 'posesión' de 'posesión futura' ya que si ocurre la última el contador quedará en 2
+            [{"LOWER": "posesión"}, {"LOWER": "futura"}],
+            [{"LOWER": "posesión"}, {"LOWER": "a"}, {"LIKE_NUM": True}, {"LOWER": {"IN": tiempo}}],
         ])
     
     matcherCuotas = Matcher(nlp.vocab)
