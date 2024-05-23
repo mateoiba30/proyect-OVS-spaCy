@@ -6,17 +6,17 @@ from spacy.tokens import Doc, Span
 
 nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con muchos datos
 
-gt = pd.read_csv("DBPreVenta.csv")#abrimos el csv -> lo hacemos una DataFrame
+gt = pd.read_csv("csvFIle.csv")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")
 
-rangeRows = gt.iloc[:27]
+rangeRows = gt.iloc[:1]
 
 for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamente el csv
 
     description = row["DESCRIPCION"]#pedimos una columna especifica segun el nombre de la columna, indicada en la 1er linea del csv
     doc = nlp(description)# el doc tiene cada palabra/token
 
-    print("Descripcion numero ", index+1)
+    print(f"\nDescripcion numero", (index+1))
     print("")
     print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
     print("")
@@ -30,14 +30,11 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
         ])#defino los patrones para encontrar cierto campo
 
     print("")
-    maxSize = 0
-    best_span = doc[0:0]
-    print("matches:")
     matches = matcher(doc)#mostramos lo que encontramos con el patron
     if len(matches) > 0:
-        print("True")
+        print("preventa: True")
     else:
-        print("False")
+        print("preventa: False")
 
     print("")
     print("------------------------------------------------------------")
