@@ -11,7 +11,7 @@ gt = gt.fillna("")
 
 rangeRows = gt.iloc[:27]
 
-minimosMatcheos = 1
+minimosMatcheos = 2 #es lo mismo a poner 1 y sacar lo de las cuotas
 
 TP = 0
 TN = 0
@@ -27,7 +27,9 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     tiempo = ["año", "años", "mes", "meses"]
     #para usar con LOWER
     palabraPreVenta = ["preventa", "pre-venta"]
-    palabrasFuturoExactas = ["concretará", "contará","propuesta", "construcción", "proyecto", "entregará", "entregarán", "entrega", "posesión", "obra", "desarrollo"]
+    palabrasFuturoExactas = ["concretará", "contará","propuesta", "construcción", "construccion", "proyecto", "entregará", "entregarán", "entrega", "posesión", "posesión", "obra", "desarrollo"]#las palabras en futuro deben tener los acentos obligatoriamente
+    cuotasIndicadorExacto = ["cuota", "cuotas", "cta", "ctas", "plan", "pozo", "anticipo", "fideicomiso"]
+    cuotasIndicadorAproximado = ["financiar", "financiado", "financiación", "financiacion"]#encontrarla en cualquier conjugación o palabra de la familia
 
     matcherAsegurado = Matcher(nlp.vocab)
     matcherAsegurado.add("asegurados", [ #si matcheo algo de acá seguro es una preventa
@@ -44,6 +46,12 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
             #[{"LOWER": "posesión"}, {"LOWER": "a"}, {"LIKE_NUM": True}, {"LOWER": {"IN": tiempo}}],
         ])
     
+    matcherCuotas = Matcher(nlp.vocab)
+    matcherCuotas.add("cuotas", [ #si matcheo algo de acá tal vez es una preventa
+            [{"LOWER": {"IN": cuotasIndicadorExacto}}],
+            [{"LOWER": {"IN": cuotasIndicadorAproximado}}],
+        ])
+    
     mostrar = False
     matcheos = 0
     matcherAsegurado = matcherAsegurado(doc)#mostramos lo que encontramos con el patron
@@ -52,6 +60,13 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
 
     matcherPosible = matcherPosible(doc)#mostramos lo que encontramos con el patron
     for match_id, start, end in matcherPosible: #para lo que encontramos vamos a mostrar solo eso
+        matcheos += 1
+
+    matcheosCuotas =0
+    matcherCuotas = matcherCuotas(doc)#mostramos lo que encontramos con el patron
+    for match_id, start, end in matcherCuotas: #para lo que encontramos vamos a mostrar solo eso
+        matcheosCuotas += 1
+    if matcheosCuotas > 0:
         matcheos += 1
 
     prediccion = False
@@ -86,6 +101,8 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
         for match_id, start, end in matcherAsegurado:
             print(doc[start:end].text)
         for match_id, start, end in matcherPosible:
+            print(doc[start:end].text)
+        for match_id, start, end in matcherCuotas:
             print(doc[start:end].text)
         print("")
 
