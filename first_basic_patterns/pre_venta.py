@@ -9,7 +9,7 @@ nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con
 gt = pd.read_csv("DBPreVenta.csv")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")
 
-rangeRows = gt.iloc[17:18]
+rangeRows = gt.iloc[:27]
 
 minimosMatcheos = 2 #es lo mismo a poner 1 y sacar lo de las cuotas
 
@@ -91,7 +91,7 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
         print("")
         print(description) #para ver el texto normal, aunque lo podríamos ver en el edit-csv.net
         print("")
-        for token in doc: print(token.text, token.lemma_, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token    mostrar = False
+        #for token in doc: print(token.text, token.lemma_, token.pos_, token.dep_, token.head.text) #para ver más a fondo la descripción de cada token    mostrar = False
         print("")
         print("esperado: " + str(resultado))
         print("")
@@ -113,12 +113,18 @@ if TP + FP != 0:
     precision = TP/(TP+FP)
 else:
     precision = 0
+    f1 = 0
 if TP + FN != 0:
     recall = TP/(TP+FN)
 else:
     recall = 0
+    f1 = 0
 
-f1 = 2*(precision*recall)/(precision+recall)
+if precision+recall !=0:
+    f1 = 2*(precision*recall)/(precision+recall)
+else:
+    f1=0
+
 print("tp: " + str(TP))
 print("fp: " + str(FP))
 print("fn: " + str(FN))
