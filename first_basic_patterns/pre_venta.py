@@ -7,10 +7,10 @@ import datetime
 
 nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con muchos datos
 #gt = pd.read_csv("DBPreVenta.csv")
-gt = pd.read_csv("ground_truth_100-preventa.csv", delimiter="|")#abrimos el csv -> lo hacemos una DataFrame
+gt = pd.read_csv("ground_truth_100-preventa2.csv", delimiter="|")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")
 
-rangeRows = gt.iloc[:100]
+rangeRows = gt.iloc[:130]
 
 minimosMatcheos = 2 #es lo mismo a poner 1 y sacar lo de las cuotas
 
@@ -43,7 +43,6 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     matcherPosible = Matcher(nlp.vocab)
     matcherPosible.add("posibles", [ #si matcheo algo de acá tal vez es una preventa
         [{"LOWER":{"IN": desarrolloSinonimos}}], #sacar desarrollo?
-        #[{"LOWER":{"IN": propuestaSinonimos}}],
         [{"LOWER":{"IN": palabrasFuturoExactas}}],
         [{"LOWER": "primeras"}, {"LIKE_NUM": True}, {"LOWER": "unidades"}],
         #distingo si encuentro 'posesión' de 'posesión futura' ya que si ocurre la última el contador quedará en 2
