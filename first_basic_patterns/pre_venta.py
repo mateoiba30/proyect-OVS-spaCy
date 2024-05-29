@@ -6,7 +6,7 @@ from spacy.tokens import Doc, Span
 import datetime
 
 nlp = spacy.load("es_core_news_lg")#importamos la info entrenada en español con muchos datos
-
+#gt = pd.read_csv("DBPreVenta.csv")
 gt = pd.read_csv("ground_truth_100-preventa.csv", delimiter="|")#abrimos el csv -> lo hacemos una DataFrame
 gt = gt.fillna("")
 
@@ -28,24 +28,28 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
     tiempo = ["año", "años", "mes", "meses"]
     #para usar con LOWER
     palabraPreVenta = ["preventa", "pre-venta"]
-    palabrasFuturoExactas = ["concretará", "contará","propuesta", "construcción", "construccion", "proyecto", "entregará", "entregarán", "entrega", "posesión", "posesión", "obra", "desarrollo"]#las palabras en futuro deben tener los acentos obligatoriamente
+    desarrolloSinonimos = ["construcción", "construccion", "obra", "desarrollo"]
+    propuestaSinonimos = ["propuesta", "proyecto", "posible", "posibilidad", "destinado", "preparado"]#, "posible", "posibilidad", "destinado"
+    palabrasFuturoExactas = ["concretará", "contará","entregará", "entregarán", "entrega", "posesión", "posesión"]#las palabras en futuro deben tener los acentos obligatoriamente
     cuotasIndicadorExacto = ["cuota", "cuotas", "cta", "ctas", "plan", "pozo", "anticipo", "fideicomiso"]
     cuotasIndicadorAproximado = ["financiar","financiación", "financiacion"]#encontrarla en cualquier conjugación o palabra de la familia
 
     matcherAsegurado = Matcher(nlp.vocab)
     matcherAsegurado.add("asegurados", [ #si matcheo algo de acá seguro es una preventa
-            [{"LOWER":{"IN": palabraPreVenta}}],
-            [{"LOWER": "pre"}, {"LOWER": "venta"}],
-        ])#defino los patrones para encontrar cierto campo
+        [{"LOWER":{"IN": palabraPreVenta}}],
+        [{"LOWER": "pre"}, {"LOWER": "venta"}],
+    ])#defino los patrones para encontrar cierto campo
     
     matcherPosible = Matcher(nlp.vocab)
     matcherPosible.add("posibles", [ #si matcheo algo de acá tal vez es una preventa
-            [{"LOWER":{"IN": palabrasFuturoExactas}}],
-            [{"LOWER": "primeras"}, {"LIKE_NUM": True}, {"LOWER": "unidades"}],
-            #distingo si encuentro 'posesión' de 'posesión futura' ya que si ocurre la última el contador quedará en 2
-            [{"LOWER": "posesión"}, {"LOWER": "futura"}],
-            [{"LOWER": "posesión"}, {"LOWER": "a"}, {"LIKE_NUM": True}, {"LOWER": {"IN": tiempo}}],
-        ])
+        [{"LOWER":{"IN": desarrolloSinonimos}}], #sacar desarrollo?
+        #[{"LOWER":{"IN": propuestaSinonimos}}],
+        [{"LOWER":{"IN": palabrasFuturoExactas}}],
+        [{"LOWER": "primeras"}, {"LIKE_NUM": True}, {"LOWER": "unidades"}],
+        #distingo si encuentro 'posesión' de 'posesión futura' ya que si ocurre la última el contador quedará en 2
+        [{"LOWER": "posesión"}, {"LOWER": "futura"}],
+        [{"LOWER": "posesión"}, {"LOWER": "a"}, {"LIKE_NUM": True}, {"LOWER": {"IN": tiempo}}],
+    ])
     
     matcherFecha = Matcher(nlp.vocab)
     matcherFecha.add("fecha", [ #si encuentra un año mayor al actual aporta, pero no es seguro que sea pre-venta
@@ -54,16 +58,19 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
 
     matcherCuotas = Matcher(nlp.vocab)
     matcherCuotas.add("cuotas", [ #si matcheo algo de acá tal vez es una preventa
-            [{"LOWER": {"IN": cuotasIndicadorExacto}}],
-            [{"LEMMA": {"IN": cuotasIndicadorAproximado}}],
+        [{"LOWER": {"IN": cuotasIndicadorExacto}}],
+        [{"LEMMA": {"IN": cuotasIndicadorAproximado}}],
+    ])
+    
+    relleno = ["DET", "ADP"]
+    matcherDescartar = Matcher(nlp.vocab)
+    matcherDescartar.add("descartar", [ #si matcheo algo de acá seguro no es una preventa
+            [{"LEMMA": {"IN": propuestaSinonimos}}, {"POS": {"IN": relleno}}, {"LOWER": {"IN": desarrolloSinonimos}}]
         ])
     
     mostrar = False #cambiar si queiro ver todo o solo lo que no matchea bien
     matcheos = 0
-    matcherAsegurado = matcherAsegurado(doc)#mostramos lo que encontramos con el patron
-    for match_id, start, end in matcherAsegurado: #para lo que encontramos vamos a mostrar solo eso
-        matcheos += minimosMatcheos+1
-
+    
     palabrasFuturoMatcheadas = []
     matcherPosible = matcherPosible(doc)#mostramos lo que encontramos con el patron
     for match_id, start, end in matcherPosible: #para lo que encontramos vamos a mostrar solo eso
@@ -100,6 +107,16 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
 
     if matcheosCuotas > 0:
         matcheos += 1
+
+    descartarMatchers = False
+    matcherDescartar = matcherDescartar(doc)#mostramos lo que encontramos con el patron
+    for match_id, start, end in matcherDescartar: #para lo que encontramos vamos a mostrar solo eso
+        matcheos = 0
+        descartarMatchers = True
+
+    matcherAsegurado = matcherAsegurado(doc)#mostramos lo que encontramos con el patron
+    for match_id, start, end in matcherAsegurado: #para lo que encontramos vamos a mostrar solo eso
+        matcheos += minimosMatcheos+1
 
     prediccion = False
     if matcheos >= minimosMatcheos:
@@ -138,6 +155,7 @@ for index, row in rangeRows.iterrows():#gracias a pandas, recorremos sencillamen
             print(matchedYears)
         if len(palabrasCuotasMatcheadas) > 0:
             print(palabrasCuotasMatcheadas)
+        print("Matcher descartados: ", descartarMatchers)
         print("")
 
 print("")
